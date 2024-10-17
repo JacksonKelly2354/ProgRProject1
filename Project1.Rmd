@@ -1,0 +1,10 @@
+---
+title: "Project 1"
+author: "Tien Le, Jackson Kelly"
+date: "2024-10-17"
+output: html_document
+---
+
+```{r}
+?
+```
