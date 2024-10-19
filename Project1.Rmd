@@ -1,10 +1,83 @@
+```{r setup, include=FALSE} 
+knitr::opts_chunk$set(warning = FALSE) 
+```
+
 ---
 title: "Project 1"
 author: "Tien Le, Jackson Kelly"
 date: "2024-10-17"
 output: html_document
+bibliography: bibliography.bibtex
 ---
 
+# Introduction 
+Our study aims to better understand diabetes and predict it based on various individual characteristics. Diabetes is one of the most chronic, costly, and consequential diseases. By gaining a deeper understanding of diabetes and making accurate predictions, we can help in treatment and care for those affected. By examining different contributing factors to diabetes, such as BMI, age, and plasma glucose concentration, we can identify patterns in those affected and and make predictions about others based on these observations. We hope that the findings of our study can improve diagnosis by more accurately identifying diabetes in at risk individuals. 
+
+Diabetes is a serious issue that affects an estimated 8.5% of adults worldwide. It can cause heart attack, strokes, kidney failure, and death. For type 2 diabetes, which is the majority of cases, it is often preventable, and the worst effects can be avoided by an early diagnosis and treatment [@whoDiabetes]. Therefore, being able to effectively diagnose diabetes is critical, and we hope our findings can help contribute to doing so. 
+
+# Data
+Our data set comes from the National Institute of Diabetes and Digestive and Kidney Diseases. This data set examines 768 individuals, with measurements for their number of pregnancies, glucose level, blood pressure, skin thickness, insulin levels, BMI, age, and diabetes pedigree (a genetic estimate of an individual’s likelihood to develop diabetes). 268 of these individuals do have diabetes, and are labeled accordingly. This label is found in the outcome column and is binary, with a 1 signifying an individual with diabetes, and a 0 an individual without. 
+
+This data set has a lot of key information with regards to diabetes. For example, according the WHO, 95% of diabetes cases are type 2, which is often attributed to being overweight, not getting enough exercise, and genetics. Thus a measurement like BMI is very relevant to examining diabetes. Additionally, features like insulin and glucose level relate directly to the disease, and thus their measurement is important [@whoDiabetes]. The limitation of the data set is that we are only looking at 8 features, and there are more factors that can potentially cause diabetes. The data set is also relatively small, with only 268 diabetic individuals potentially not properly illustrating true patterns. 
+
+# Analysis
 ```{r}
-?
+data <- read.csv("health care diabetes.csv")
+data <- na.omit(data)
+
+library(corrplot)
+
+matrix <- cor(data)
+
+corrplot(matrix, method = "color", col = colorRampPalette(c("white", "blue"))(500), addCoef.col = "black", tl.srt = 45, tl.col = "black")
+
+
 ```
+
+In this figure, we see the relationship of different attributes with each other, and ultimately with diabetes as a whole. This is done by calculating the correlation coefficient for each combination of attributes. Based on the bottom row, we can see that Glucose, BMI, and Age have the largest correlation with diabetes (at 0.47, 0.29, and 0.24 respectively). We also observe logical correlations in some of the attributes, such as number of pregnancies and age. 
+
+```{r}
+par(mfrow = c(1, 2))
+hist(data[data$Outcome == 1, ]$Glucose, xlab = 'Glucose level', ylab = '# Observations', main='Glucose Levels w/ Diabetes', xlim = c(min(data$Glucose), max(data$Glucose)), col = "red")
+hist(data[data$Outcome == 0, ]$Glucose, xlab = 'Glucose level', ylab = '# Observations', main='Glucose Levels w/out Diabetes', xlim = c(min(data$Glucose), max(data$Glucose)), col = "blue")
+par(mfrow = c(1, 1))
+```
+
+Since glucose was previously identified as the attribute with the largest correlation for our outcome, we will examine the relationship closer. These two histograms demonstrate the difference in glucose levels between those with diabetes, and those without. For those with the disease, the glucose levels are left-skewed, being centered well above 100. In contrast, the histogram for those without diabetes shows no skew, and is centered much closer to 100. This illustrates a pattern of higher glucose levels in those with diabetes. Additionally, almost everyone with very high glucose values (>150) did have diabetes. 
+
+```{r, echo=FALSE}
+data$BMI_group <- cut(data$BMI, breaks = 7)
+group_avg <- aggregate(Outcome ~ BMI_group, data=data, FUN=mean)
+group_avg$group_num <- as.numeric(group_avg$BMI_group)
+
+plot(group_avg$group_num, group_avg$Outcome, xlab = "BMI Grouping (low to high)", ylab = "Diabetes", main = "BMI and Diabetes", col = "blue", pch = 16)
+model <- lm(Outcome ~ group_num, data = group_avg)
+abline(model, col = "blue", lwd = 1)
+```
+
+This plot demonstrates the correlation between BMI and diabetes. We started by grouping the individuals in the dataset into 7 even groups based on their BMI. From there, we took the average of each group, with a 1 representing an individual with diabetes and a 0 representing one without. Based on these averages, we observed a trend of groups with larger BMIs having higher averages, and thus being more inclined to diabetes. Therefore, we demonstrate the strong correlation between BMI and diabetes in our dataset.  
+
+```{r, echo=FALSE}
+library(caTools)
+data <- na.omit(data)
+keycol <- data[, c("Glucose", "BMI", "Age", "Outcome")]
+keycol$BMI <- as.numeric(keycol$BMI)
+split <- sample.split(keycol$Outcome, SplitRatio=0.8)
+train <- subset(keycol, split == TRUE)
+test <- subset(keycol, split == FALSE)
+
+model <- glm(Outcome ~ ., data = train, family = binomial)
+predictions <- predict(model, newdata = test, type = "response")
+setPred <- ifelse(predictions > 0.5, 1, 0)
+library(ggplot2)
+ggplot(test, aes(x = setPred, y = Outcome)) + geom_jitter(height = 0.1, width = 0.1, color = "blue") + labs(title="Can we predict Diabetes?")
+```
+
+The graph above illustrates a predictive algorithm for diabetes. We started by splitting our data into training and test sets. Additionally, we chose to only look at the three most relevant features, being Glucose, BMI, and Age. The training set was used to give the model a reference to how the parameters affected the outcome, i.e. whether or not an individual has diabetes. We then apply the model to the rest of the data in the test set, and then compare to the known outcome given in the data. The scatterplot shows 4 potential outcomes of our prediction, a true negative at (0, 0), a false negative at (0, 1), a false positive at (1, 0), and a true positive at (1, 1). We can calculate the accuracy to be `r mean(setPred == test$Outcome)`. While our predictions appear to be correct more often than not, the amount of errors is large enough to conclude that we cannot consistently make accurate predictions for diabetes just based on the features examined. [@R; @RStudio]
+
+# Conclusion
+Our study aimed to be able to predict diabetes effectively, as well as examine the underlying causes and symptoms. By examining trends in our data set, we were able to identify key features of diabetes, such as BMI, glucose levels, and age. Additionally, we were able to set up a model to make predictions about an individuals diagnosis based on their measurements in the data. If future steps were taken, a bigger sample of individuals would be beneficial to get a better idea of the population and improve the accuracy of our predictions. 
+
+# Contribution Statement
+Tien Le:
+Jackson Kelly: Intro+dataset paragraphs, correlation plot, glucose levels histograms, BMI vs Diabetes plot, and predictive scatterplot. 
