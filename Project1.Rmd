@@ -106,4 +106,4 @@ Our study aimed to be able to predict diabetes effectively, as well as examine t
 
 # Contribution Statement
 Tien Le:
-Jackson Kelly: Intro+dataset paragraphs, correlation plot, glucose levels histograms, BMI vs Diabetes plot, and predictive scatterplot. 
+Jackson Kelly: Wrote intro and data set paragraphs. Worked on various plots and their analysis. Helped write conclusion statement. 
