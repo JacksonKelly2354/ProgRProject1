@@ -100,7 +100,7 @@ The graph \@ref(fig:scatter-plot) above illustrates a predictive algorithm for d
 Our study aimed to be able to predict diabetes effectively, as well as examine the underlying causes and symptoms. By examining trends in our data set, we were able to identify key features of diabetes, such as BMI, glucose levels, and age. Additionally, we were able to set up a model to make predictions about an individuals diagnosis based on their measurements in the data. These prediction models demonstrates significance where we can look at BMI, glucose and age to predict if the patient has diabetes. If future steps were taken, a bigger sample of individuals would be beneficial to get a better idea of the population and improve the accuracy of our predictions. Another idea is taking the frequency of how often the patients to examine, to account for skewness where BMI and glucose are inconsistent due to individual differences. Family history, Pedigree function, should also be taken in account, since genetics were not accounted in this study. 
 
 # Contribution Statement
-Tien Le: Wrote abstract and helped write conclusion, worked on analysis and results section, including performing linear model to describe graphs.  
+Tien Le: Wrote abstract and helped write conclusion, worked on analysis and results section, including performing linear model to describe graphs and its significance.  
 Jackson Kelly: Wrote intro and data set paragraphs. Worked on various plots and their analysis. Helped write conclusion statement. 
 
 # Works Cited
