@@ -53,7 +53,7 @@ p_value_glucose <- model_summary$coefficients["Glucose", "Pr(>|t|)"]
 
 
 The p-value for Glucose is `r p_value_glucose`. 
-This extremely small p-value suggests that Glucose has a statistically significant relationship with diabetes. We have high confidence that glucose level can predict the diagnostic of diabetes. Therefore, to support the above's histogram, high glucose correlates to the outcome of diabetes.
+This  small p-value, <0.05, suggests that Glucose has a statistically significant relationship with diabetes. We have high confidence that glucose level can predict the diagnostic of diabetes. Therefore, to support the above's histogram, high glucose correlates to the outcome of diabetes.
 
 ```{r bmi, fig.cap="Demonstrates a trend of individuals with higher BMIs having higher rates of diabetes."}
 data$BMI_group <- cut(data$BMI, breaks = 7)
