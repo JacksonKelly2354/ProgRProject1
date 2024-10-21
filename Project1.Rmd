@@ -68,6 +68,13 @@ abline(model, col = "blue", lwd = 1)
 
 This plot \@ref(fig:bmi) demonstrates the correlation between BMI and diabetes. We started by grouping the individuals in the dataset into 7 even groups based on their BMI. From there, we took the average of each group, with a 1 representing an individual with diabetes and a 0 representing one without. Based on these averages, we observed a trend of groups with larger BMIs having higher averages, and thus being more inclined to diabetes. Therefore, we demonstrate the strong correlation between BMI and diabetes in our dataset.  
 
+# Significance of BMI P-value
+```{r, echo=FALSE}
+fit <- lm(Outcome ~ Pregnancies + Glucose + BloodPressure + SkinThickness + Insulin + BMI + DiabetesPedigreeFunction + Age, data = data)
+model_summary <- summary(fit)
+p_value_bmi <- model_summary$coefficients["BMI", "Pr(>|t|)"]
+```
+The p-value for BMI is `r p_value_bmi`. While being below 0.05, the BMI p-value demonstrates that BMI levels are siginificant enough or us to predict the outcome of diabetes. Therefore, to support the above's plot, we demonstrate the strong correlation between BMI and diabetes in our dataset. 
 
 
 ```{r scatter-plot, echo=FALSE, fig.cap="Predictions scatterplot"}
@@ -85,14 +92,6 @@ setPred <- ifelse(predictions > 0.5, 1, 0)
 library(ggplot2)
 ggplot(test, aes(x = setPred, y = Outcome)) + geom_jitter(height = 0.1, width = 0.1, color = "blue") + labs(title="Can we predict Diabetes?")
 ```
-
-# Significance of BMI P-value
-```{r, echo=FALSE}
-fit <- lm(Outcome ~ Pregnancies + Glucose + BloodPressure + SkinThickness + Insulin + BMI + DiabetesPedigreeFunction + Age, data = data)
-model_summary <- summary(fit)
-p_value_bmi <- model_summary$coefficients["BMI", "Pr(>|t|)"]
-```
-The p-value for BMI is `r p_value_bmi`. While being below 0.05, the BMI p-value demonstrates that BMI levels are siginificant enough or us to predict the outcome of diabetes. Therefore, to support the above's plot, we demonstrate the strong correlation between BMI and diabetes in our dataset.  
 
 # Diabetes Algorithm 
 The graph \@ref(fig:scatter-plot) above illustrates a predictive algorithm for diabetes. We started by splitting our data into training and test sets. Additionally, we chose to only look at the three most relevant features, being Glucose, BMI, and Age. The training set was used to give the model a reference to how the parameters affected the outcome, i.e. whether or not an individual has diabetes. We then apply the model to the rest of the data in the test set, and then compare to the known outcome given in the data. The scatterplot shows 4 potential outcomes of our prediction, a true negative at (0, 0), a false negative at (0, 1), a false positive at (1, 0), and a true positive at (1, 1). We can calculate the accuracy to be `r mean(setPred == test$Outcome)`. While our predictions appear to be correct more often than not, the amount of errors is large enough to conclude that we cannot consistently make accurate predictions for diabetes just based on the features examined. [@R; @RStudio; @codecademyLinearRegression]
